@@ -205,8 +205,8 @@ Stellenbosch University
 
 For questions about this analysis or collaboration opportunities:
 - Email: ngcongosnethemba@gmail.com
-- GitHub: [View Portfolio](https://github.com/yourusername/portfolio)
-- LinkedIn: [Add your LinkedIn profile]
+  
+- [LinkedIn:](www.linkedin.com/in/sinethemba-ngcongo)
 
 ---
 
