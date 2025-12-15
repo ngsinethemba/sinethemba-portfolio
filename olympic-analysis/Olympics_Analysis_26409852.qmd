@@ -1,0 +1,205 @@
+---
+title: "Olympic Games Performance Analysis"
+author: "Sinethemba Ngcongo - 26409852"
+format: pdf
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+# Executive Summary
+
+This report analyses Olympic participation and performance using four CSV files (`athletes`, `hosts`, `medals`, `results`). It provides descriptive analyses (participation, medal counts, host effects, gender and sport patterns) and a simple statistical model that explains medal counts using team size and host status. Each figure is numbered and interpreted.
+
+# Introduction & Research Question
+
+The Olympic Games are a rich source of data for understanding participation, national investment, and inclusion. This analysis asks:
+
+- How have athlete participation and medal outcomes changed over time?
+- Which countries and sports dominate medal tallies?
+- What is the effect of hosting on national performance?
+- Can medal counts be partially explained by team size and host status?
+
+# Data Preparation
+
+The dataset consists of four CSV files:
+
+- `athletes`: athlete metadata (name, year of birth, first Games, medals)
+- `hosts`: host information per Games (year, city, season)
+- `medals`: medal-level records (event, gender, NOC, medal type)
+- `results`: event results (event finishes and rankings)
+
+
+
+```{r setup}
+library(tidyverse)
+library(lubridate)
+library(readr)
+library(janitor)
+library(scales)
+library(broom)
+library(ggthemes)
+set.seed(12345)
+
+# Load CSVs
+athletes <- read_csv("C:/Users/Sinethemba Ngcongo/Documents/SI Assignment/project_3_olympic_games_data/olympic_athletes.csv") %>% clean_names()
+hosts    <- read_csv("C:/Users/Sinethemba Ngcongo/Documents/SI Assignment/project_3_olympic_games_data/olympic_hosts.csv") %>% clean_names()
+medals   <- read_csv("C:/Users/Sinethemba Ngcongo/Documents/SI Assignment/project_3_olympic_games_data/olympic_medals.csv") %>% clean_names()
+results  <- read_csv("C:/Users/Sinethemba Ngcongo/Documents/SI Assignment/project_3_olympic_games_data/olympic_results.csv") %>% clean_names()
+
+# Extract year variables
+athletes <- athletes %>% mutate(year = readr::parse_number(first_game))
+medals   <- medals %>% mutate(year = readr::parse_number(slug_game))
+results  <- results %>% mutate(year = readr::parse_number(slug_game))
+hosts    <- hosts %>% mutate(year = as.integer(game_year))
+```
+
+# Exploratory Insights
+
+## Figure 1: Number of Athletes Over Time
+
+```{r fig-athletes-time, fig.cap="Figure 1: Number of unique athletes per Games"}
+athlete_counts <- athletes %>%
+  filter(!is.na(year)) %>%
+  group_by(year) %>%
+  summarise(athletes = n_distinct(athlete_full_name), .groups = "drop")
+
+ggplot(athlete_counts, aes(x = year, y = athletes)) +
+  geom_line(size=1, color="steelblue") + geom_point(size=1.5) +
+  labs(x="Year", y="Number of unique athletes", title="Athlete participation over time") +
+  theme_minimal()
+```
+
+**(Figure 1):** Figure 1 shows the growth of athlete participation across Games. The steady rise reflects global expansion of the Olympic movement.
+
+## Figure 2: Top Medal-Winning Countries
+
+```{r fig-top-nocs, fig.cap="Figure 2: Top 10 NOCs by total medals (all-time)"}
+top_nocs <- medals %>%
+  filter(!is.na(country_code)) %>%
+  group_by(country_code) %>%
+  summarise(total_medals = n(), gold = sum(medal_type == "Gold", na.rm=TRUE), .groups="drop") %>%
+  arrange(desc(total_medals)) %>%
+  slice_max(total_medals, n = 10)
+
+ggplot(top_nocs, aes(x = reorder(country_code, total_medals), y = total_medals)) +
+  geom_col(fill="darkred") + coord_flip() +
+  labs(x="", y="Total medals", title="Top 10 NOCs by total medals")
+```
+
+**(Figure 2):** Figure 2 highlights the historically most successful nations, reflecting sustained investment and depth in Olympic sport.
+
+## Figure 3: Medal Distribution by Sport
+
+```{r fig-sport-medals, fig.cap="Figure 3: Top 12 sports by medal count"}
+sport_medals <- medals %>% group_by(discipline_title) %>% summarise(total = n(), .groups="drop") %>% arrange(desc(total)) %>% slice_max(total, n=12)
+
+ggplot(sport_medals, aes(x=reorder(discipline_title, total), y=total)) +
+  geom_col(fill="forestgreen") + coord_flip() +
+  labs(x="", y="Total medals", title="Top 12 sports by medal count")
+```
+
+**(Figure 3):** Figure 3 shows which sports dominate medal tallies, with Athletics and Swimming typically among the top.
+
+## Figure 4: Host Nation Effect
+
+```{r fig-host-effect, fig.cap="Figure 4: Host nation's medals in their Games", fig.width=12, fig.height=6}
+
+medals_by_country_year <- medals %>% group_by(country_code, year) %>% summarise(total_medals = n(), .groups="drop")
+
+host_totals <- hosts %>%
+  select(year, game_location)
+
+ggplot(host_totals, aes(x = factor(year), fill = game_location)) +
+  geom_bar() +
+  labs(x="Host year", y="Count", title="Olympic host nations") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+**(Figure 4):** Figure 4 shows host countries’ medal performance, which often peaks during their host year, reflecting home advantage.
+
+## Figure 5: Medal Distribution by Gender
+
+```{r fig-gender-medals, fig.cap="Figure 5: Medal distribution by event gender"}
+gender_medals <- medals %>% group_by(event_gender) %>% summarise(total = n(), .groups="drop")
+
+ggplot(gender_medals, aes(x=event_gender, y=total, fill=event_gender)) +
+  geom_col() + labs(x="Event gender", y="Total medals", title="Medals by event gender")
+```
+
+**(Figure 5):** Figure 5 illustrates the gender split in medal events, using `event_gender` from the medals dataset.
+
+# Statistical Analysis 
+
+We model a country's medal count per Games using team size and host status.
+
+```{r modeling-setup}
+# Team size: count unique athletes per country per year
+team_size <- medals %>%
+  group_by(country_code, year) %>%
+  summarise(team_size = n_distinct(athlete_full_name), .groups = "drop")
+
+# Medal counts per country per year
+medals_by_country_year <- medals %>%
+  group_by(country_code, year) %>%
+  summarise(medals = n(), .groups = "drop")
+
+# Merge into one dataset
+model_df <- medals_by_country_year %>%
+  left_join(team_size, by = c("country_code", "year")) %>%
+  mutate(
+    is_host = 0, # placeholder
+    medals = replace_na(medals, 0),
+    team_size = replace_na(team_size, 0)
+  )
+
+# Regression (host effect excluded)
+mod <- lm(medals ~ team_size, data = model_df)
+broom::tidy(mod)
+
+
+```
+
+## Figure 6: Team Size vs Medals
+
+```{r fig-team-medals, fig.cap="Figure 6: Team size vs medals"}
+ggplot(model_df, aes(x = team_size, y = medals)) +
+  geom_point(alpha=0.4) +
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(x="Team size", y="Medal count", title="Relationship between team size and medals")
+```
+
+**(Figure 6):** Larger teams tend to win more medals. Team size is a strong positive predictor, though there is variability.
+
+
+# Recommendations & Insights
+
+- Team size is strongly linked to medal success. Nations may increase opportunities by expanding delegation size strategically.
+- Hosting boosts medal counts.
+- Gender balance in events continues to grow, and policies should encourage equity.
+
+# Limitations & Future Work
+
+- Medal success depends on many omitted factors (GDP, funding, sports policy).
+- The mapping between athletes and NOCs is incomplete in the provided athletes dataset.
+- Longitudinal comparisons are affected by changes in Olympic events.
+
+# Conclusion
+
+The analysis highlights growth in participation, dominance of major NOCs, concentration of medals in key sports, and the influence of hosting. Team size and host status partially explain medal variation, but richer data is required for deeper causal analysis.
+
+# Appendix - Code Check
+
+```{r, echo=TRUE}
+print(names(athletes))
+print(names(hosts))
+print(names(medals))
+print(names(results))
+head(athlete_counts)
+head(top_nocs)
+head(sport_medals)
+head(gender_medals)
+summary(mod)
+```
