@@ -16,5 +16,5 @@ Comprehensive system analysis for a real-world coffee shop client, including dat
 - Database normalization
 
 ## Files
-- [Complete Project Documentation (PDF)](./OI 318 PROJECT (Mybrew).pdf)
+- [Complete Project Documentation (PDF)](./OI%20318%20PROJECT%20(Mybrew).pdf)
 
