@@ -1,0 +1,143 @@
+---
+title: "Customer Segmentation Report"
+author: "Sinethemba Ngcongo - 26409852"
+format: pdf
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+# Executive Summary
+
+This report applies data-driven techniques to segment customers in an online retail dataset using RFM (Recency, Frequency, Monetary) analysis and clustering. The findings reveal that most revenue is driven by a small group of high-value customers, while many others purchase infrequently. Four key customer groups were identified: Champions, Loyal Customers, At Risk, and New/Low Spenders. Based on these insights, targeted strategies are recommended to retain valuable clients, re-engage and those at risk.
+
+# Introduction & Research Question
+
+Understanding customer purchasing behaviour is critical for retail businesses aiming to increase profitability and improve customer retention. Transactional datasets hold rich signals about when customers buy, how often they purchase, and how much they spend. By segmenting customers into distinct groups, businesses can tailor engagement strategies to specific needs. 
+
+**Research Question:** *How can the retail platform identify and target groups of customers with different purchasing patterns in order to maximize value and improve customer retention?*
+
+# Data Preparation
+
+The dataset contained transactions from a online retailer. Key cleaning and preparation steps included:  
+
+- **Excluding cancellations**: Transactions with invoice numbers starting with “C” were removed to focus on completed sales.  
+- **Filtering invalid values**: Negative or zero quantities and prices were excluded.  
+- **Removing missing customers**: Rows without a Customer ID were dropped.  
+- **Creating monetary value**: A new field, `amount = quantity × unit_price`, was introduced to calculate revenue per line item.  
+- **Snapshot definition**: To measure recency, the reference date was set to one day after the most recent transaction.  
+
+These steps ensured a reliable, business-ready dataset.
+
+```{r}
+library(tidyverse)
+library(lubridate)
+library(janitor)
+library(skimr)
+library(scales)
+library(cluster)
+library(factoextra)
+library(broom)
+library(readxl)
+
+set.seed(12345)
+options(scipen = 999)
+raw <- read_excel("C:\\Users\\Sinethemba Ngcongo\\Documents\\SI Assignment\\project_2_online_retail.xlsx")
+
+df <- raw %>% clean_names()
+df <- df %>% filter(!is.na(customer_id), quantity > 0, unit_price > 0)
+df <- df %>% mutate(amount = quantity * unit_price)
+snapshot_date <- max(df$invoice_date, na.rm = TRUE) + days(1)
+```
+
+# Exploratory Insights
+
+Examining **recency, frequency, and monetary distributions** revealed highly skewed patterns:  
+
+```{r fig-rfm-dist, fig.cap="Figure 1: Distribution of Recency, Frequency, and Monetary Values"}
+rfm <- df %>%
+  group_by(customer_id) %>%
+  summarise(
+    recency = as.numeric(difftime(snapshot_date, max(invoice_date), units="days")),
+    frequency = n_distinct(invoice_no),
+    monetary = sum(amount)
+  )
+
+rfm %>%
+  select(customer_id, recency, frequency, monetary) %>%
+  pivot_longer(cols = -customer_id, names_to="metric", values_to="value") %>%
+  ggplot(aes(x=value)) +
+  geom_histogram(bins=50) +
+  facet_wrap(~metric, scales="free") +
+  labs(title="RFM Distributions")
+```
+
+**(Figure 1):** The distributions are highly skewed, showing that most customers purchase rarely and spend little, while a small fraction contributes disproportionately to revenue. This confirms the importance of segmenting customers rather than applying a uniform marketing approach.
+
+### Customer Relationships
+
+```{r fig-freq-monetary, fig.cap="Figure 2: Relationship between Frequency and Monetary Value"}
+ggplot(rfm, aes(x=frequency, y=monetary)) +
+  geom_point(alpha=0.3) +
+  labs(title="Frequency vs Monetary Value")
+```
+
+**(Figure 2):** Customers who purchase more frequently also generate significantly higher revenue. Frequency is therefore a key driver of overall customer value and should be central in retention strategies.
+
+# Customer Segmentation (Clustering Results)
+
+To group customers, log-transformed RFM features were standardised, and **k-means clustering** was applied. Both the elbow and silhouette methods suggested four optimal clusters.  
+
+```{r fig-elbow, fig.cap="Figure 3: Elbow Method for Determining Optimal Number of Clusters"}
+rfm_scaled <- rfm %>% mutate(across(c(recency, frequency, monetary), log1p)) %>%
+  column_to_rownames("customer_id") %>% scale()
+
+fviz_nbclust(rfm_scaled, kmeans, method="wss")
+```
+
+**(Figure 3):** The elbow method shows a clear bend at four clusters, indicating this number provides the best balance between simplicity and explanatory power.
+
+```{r fig-silhouette, fig.cap="Figure 4: Silhouette Method for Cluster Validation"}
+fviz_nbclust(rfm_scaled, kmeans, method="silhouette")
+```
+
+**(Figure 4):** The silhouette method supports four clusters, showing relatively strong internal cohesion and separation across groups.
+
+```{r fig-cluster-profile, fig.cap="Figure 5: Median RFM Values by Cluster"}
+km <- kmeans(rfm_scaled, centers=4, nstart=25)
+rfm$cluster <- factor(km$cluster)
+
+cluster_profile <- rfm %>% group_by(cluster) %>%
+  summarise(across(c(recency, frequency, monetary), median), n=n())
+cluster_profile
+```
+
+**(Figure 5):** Each cluster shows distinct characteristics. **Cluster 1** (“Champions”) includes recent and high-spending customers.**Cluster 2** (“Loyal Customers”) purchase frequently but at moderate spend levels. **Cluster 3** (“At Risk”) customers have high past spend but long gaps since their last purchase. **Cluster 4** (“New/Low Spenders”) are new or low-value customers, representing growth opportunities.
+
+# Recommendations
+
+- **Champions:** Reward with exclusive benefits and early access to products.  
+- **Loyal Customers:** Introduce loyalty programs and encourage upselling.  
+- **At Risk:** Run reactivation campaigns to bring them back.  
+- **New/Low Spenders:** Provide education and small incentives to build trust and loyalty.  
+
+# Limitations & Future Work
+
+- **Missing IDs:** Many transactions lacked Customer IDs, limiting full visibility.  
+- **Cancellations:** Excluding canceled invoices may mask dissatisfaction trends.  
+- **Seasonality:** No adjustment was made for holiday or seasonal demand patterns.  
+- **Scope:** Only RFM metrics were used. Incorporating demographics and product categories would enhance segmentation.  
+
+# Conclusion
+
+This segmentation confirms that a minority of customers generate most revenue, while many remain underdeveloped. By acting on these insights, the retailer can retain high-value customers, reduce churn, and nurture new segments for long-term growth. The clustering approach demonstrates the power of analytics to directly inform marketing and retention strategies.
+
+# Appendix - Full R Code
+
+```{r, echo=TRUE}
+print(raw)
+print(df)
+print(rfm)
+print(cluster_profile)
+```
