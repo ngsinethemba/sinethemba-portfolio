@@ -21,7 +21,7 @@ A balanced CV showcasing both technical capabilities and leadership experience. 
 ---
 
 ### Technical/Data-Focused CV
-**File:** (./)
+[View Techincal CV](./Sinethemba%20Ngcongo%20-%20Techinical%20CV%20(final).pdf)
 
 Optimized for technical roles with emphasis on development, data analysis, and systems work. Best for:
 - Software developer positions
