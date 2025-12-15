@@ -1,0 +1,49 @@
+# R
+.Rhistory
+.RData
+.Rproj.user/
+*.Rproj
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.env
+*.egg-info/
+
+# Node/React/JavaScript
+node_modules/
+build/
+dist/
+.env
+.env.local
+npm-debug.log*
+package-lock.json
+
+# Operating System
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Data files (optional - if you have large datasets)
+*.csv
+*.xlsx
+*.zip
+data/raw/
+
+# PDFs generated from code (keep your original PDFs!)
+# Uncomment if you're regenerating PDFs from code
+# *.pdf
+```
+
+---
+
