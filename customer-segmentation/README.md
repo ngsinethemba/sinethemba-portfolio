@@ -17,5 +17,4 @@ Applied RFM (Recency, Frequency, Monetary) analysis and k-means clustering to se
 - [Full Report (PDF)](./Customer_Segmentation_26409852.pdf)
 - [R Code (Qmd)](./Customer_Segmentation_26409852_.qmd) 
 
-## Visualizations
-[Add screenshots of your key plots here]
+
