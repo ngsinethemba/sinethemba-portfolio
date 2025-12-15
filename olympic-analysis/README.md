@@ -146,8 +146,8 @@ All visualizations created using `ggplot2` with professional styling.
 ## 📁 Project Files
 
 - **[Full Analysis Report (PDF)](./Olympics_Analysis_26409852.pdf)** - Complete findings and visualizations
-- **[R Code (Quarto)](./olympics_analysis.qmd)** - Reproducible analysis code (if available)
-- **images/** - High-resolution plots and charts
+- **[R Code (Quarto)](./Olympics_Analysis_26409852.qmd)** - Reproducible analysis code (if available)
+
 
 ---
 
