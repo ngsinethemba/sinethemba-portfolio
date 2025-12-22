@@ -1,0 +1,43 @@
+
+EXECUTIVE SUMMARY - BANKING ANALYTICS REPORT
+Generated: 2025-12-22 11:10:16
+================================================================================
+
+KEY METRICS:
+-----------
+Total Customers: 50
+Total Accounts: 50
+Total Transactions Processed: 57
+Total Transaction Volume: ZAR 1,423,370.95
+
+RISK OVERVIEW:
+-------------
+High Risk Customers: 7
+Open Fraud Alerts: 2
+Average Risk Score: 73.4/100
+
+ACCOUNT BREAKDOWN:
+-----------------
+Active Savings Accounts: 38
+Active Current Accounts: 12
+Total Deposits (Balance): ZAR 13,860,970.51
+
+TOP CHANNELS:
+------------
+channel
+atm       110
+branch    103
+online    103
+pos        96
+mobile     88
+
+REPORTS GENERATED:
+-----------------
+✓ daily_transaction_summary.csv
+✓ customer_risk_profile.csv
+✓ account_performance.csv
+✓ fraud_detection_report.csv
+✓ channel_performance.csv
+
+================================================================================
+All reports saved to: output/
