@@ -13,10 +13,10 @@ Welcome! I'm a recent BA Organizational Informatics graduate from Stellenbosch U
 
 ### 1. Banking Transaction Analysis System
 SQL-based core banking system with fraud detection and automated reporting
--[View Project](./banking-analytics/)
-**Tech:** Python, SQL, Pandas, data analysis
-**Highlights:** CASA account management, transaction processing, fraud alerts, regulatory reporting
-**Domain:** Financial services software, core banking operations
+- [View Project](./banking-analytics/)
+- **Tech:** Python, SQL, Pandas, data analysis
+- **Highlights:** CASA account management, transaction processing, fraud alerts, regulatory reporting
+- **Domain:** Financial services software, core banking operations
 
 ### 2. Customer Segmentation Analysis
 RFM analysis and k-means clustering on 397K+ retail transactions
