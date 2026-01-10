@@ -9,3 +9,47 @@ auth {
   refresh_token_ttl_sec: 2592000
 }
 jobs {}
+record_apis: [{
+  name: "books"
+  table_name: "books"
+  acl_world: [CREATE, READ, UPDATE, DELETE]
+}, {
+  name: "users"
+  table_name: "users"
+  acl_world: [CREATE, READ, UPDATE, DELETE]
+}, {
+  name: "user_books"
+  table_name: "user_books"
+  acl_world: [CREATE, READ, UPDATE, DELETE]
+}, {
+  name: "genres"
+  table_name: "genres"
+  acl_world: [CREATE, READ, UPDATE, DELETE]
+}, {
+  name: "book_authors"
+  table_name: "book_authors"
+  acl_world: [CREATE, READ, UPDATE, DELETE]
+}, {
+  name: "book_tags"
+  table_name: "book_tags"
+  acl_world: [CREATE, READ, DELETE, UPDATE]
+}, {
+  name: "reading_statuses"
+  table_name: "reading_statuses"
+  acl_world: [CREATE, READ, UPDATE, DELETE]
+}, {
+  name: "tags"
+  table_name: "tags"
+  acl_world: [CREATE, READ, UPDATE, DELETE]
+}, {
+  name: "user_book_progress"
+  table_name: "user_book_progress"
+  acl_world: [CREATE, READ, UPDATE, DELETE]
+}, {
+  name: "user_book_reviews"
+  table_name: "user_book_reviews"
+}, {
+  name: "authors"
+  table_name: "authors"
+  acl_world: [CREATE, READ, UPDATE, DELETE]
+}]

@@ -17,7 +17,8 @@ import {
   Rating,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { Favorite, FavoriteBorder, Add } from '@mui/icons-material';
+import { Favorite, FavoriteBorder, Add, LocalOffer } from '@mui/icons-material';
+import { Tooltip } from '@mui/material';
 
 export const BookGrid = () => {
   const { data, isLoading } = useListContext();
@@ -72,13 +73,30 @@ export const BookGrid = () => {
 
               <CardContent sx={{ flexGrow: 1, position: 'relative' }}>
                 {/* Genre Chip */}
+              <Box
+                display="flex"
+                alignItems="center"
+                gap={0.5}
+                sx={{ mb: 1 }}
+              >
                 <Chip
                   label={getGenreName(book.genre_id)}
                   size="small"
                   color="primary"
                   variant="outlined"
-                  sx={{ mb: 1 }}
                 />
+
+                <Tooltip title="Add tags to this book">
+                  <LocalOffer
+                    fontSize="small"
+                    color="action"
+                    sx={{ opacity: 0.7, cursor: 'pointer' }}
+                  />
+                </Tooltip>
+              </Box>
+
+
+
 
                 {/* Title */}
                 <Typography
@@ -152,16 +170,18 @@ export const BookGrid = () => {
                   gap={1}
                   mt={1}
                 >
-                  <IconButton
-                    size="small"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      // TODO: Add to favorites
-                      console.log('Add to favorites:', book.id);
-                    }}
-                  >
-                    <FavoriteBorder fontSize="small" />
-                  </IconButton>
+                  <Tooltip title="Add to favourites">
+                    <IconButton
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        console.log('Add to favorites:', book.id);
+                      }}
+                    >
+                      <FavoriteBorder fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+
                   <Button
                     size="small"
                     variant="contained"
