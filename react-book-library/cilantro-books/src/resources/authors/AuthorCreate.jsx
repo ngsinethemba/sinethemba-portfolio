@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Create,
   SimpleForm,
@@ -9,7 +10,7 @@ import {
 } from 'react-admin';
 
 export const AuthorCreate = () => (
-  <Create>
+  <Create redirect="show">
     <SimpleForm>
       <TextInput source="name" validate={[required()]} fullWidth />
       <TextInput source="bio" multiline rows={4} fullWidth />

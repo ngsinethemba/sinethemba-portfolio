@@ -1,3 +1,4 @@
+import React from 'react';
 import { DateInput, Edit, NumberInput, ReferenceInput, SimpleForm, TextInput } from 'react-admin';
 
 export const BookEdit = () => (

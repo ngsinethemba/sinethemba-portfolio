@@ -12,6 +12,7 @@ import {
   Typography,
   Box,
   Chip,
+  Button,
   IconButton,
   Rating,
 } from '@mui/material';
@@ -161,18 +162,18 @@ export const BookGrid = () => {
                   >
                     <FavoriteBorder fontSize="small" />
                   </IconButton>
-                  <IconButton
+                  <Button
                     size="small"
-                    color="primary"
+                    variant="contained"
+                    startIcon={<Add />}
                     onClick={(e) => {
                       e.stopPropagation();
-                      // TODO: Add to shelf
                       console.log('Add to shelf:', book.id);
                       navigate('/user_books/create');
                     }}
                   >
-                    <Add fontSize="small" />
-                  </IconButton>
+                    ADD to Shelf
+                  </Button>
                 </Box>
               </CardContent>
             </Card>

@@ -5,16 +5,12 @@ import React from 'react';
 // Providers
 import dataProvider from './providers/dataProvider';
 //import authProvider from './providers/authProvider';
-
 // Dashboard
 import { Dashboard } from './dashboard';
-
 // Books
 import { BookList, BookShow, BookCreate, BookEdit } from './resources/books';
-
 // Authors
 import { AuthorList, AuthorShow, AuthorCreate, AuthorEdit } from './resources/authors';
-
 // User Books (Shelves)
 import {
   UserBookList,
@@ -22,7 +18,6 @@ import {
   UserBookCreate,
   UserBookEdit,
 } from './resources/userBooks';
-
 // Reviews
 import {
   ReviewList,
@@ -30,7 +25,6 @@ import {
   ReviewCreate,
   ReviewEdit,
 } from './resources/reviews';
-
 // Simple list components for other resources
 import { List, Datagrid, TextField, EditButton, ShowButton } from 'react-admin';
 

@@ -26,10 +26,6 @@ record_apis: [{
   table_name: "genres"
   acl_world: [CREATE, READ, UPDATE, DELETE]
 }, {
-  name: "authors"
-  table_name: "authors"
-  acl_world: [CREATE, READ, UPDATE, DELETE]
-}, {
   name: "book_authors"
   table_name: "book_authors"
   acl_world: [CREATE, READ, UPDATE, DELETE]
@@ -52,4 +48,8 @@ record_apis: [{
 }, {
   name: "user_book_reviews"
   table_name: "user_book_reviews"
+}, {
+  name: "authors"
+  table_name: "authors"
+  acl_world: [CREATE, READ, UPDATE, DELETE]
 }]
