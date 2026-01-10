@@ -14,7 +14,15 @@ import {
   useRecordContext 
 } from 'react-admin';
 import { Card, CardContent, Typography, Box, Avatar } from '@mui/material';
+import { TopToolbar, ListButton } from 'react-admin';
+import { BackButton } from '../../components/BackButton';
 
+const AuthorShowActions = () => (
+  <TopToolbar>
+    <BackButton />
+    <ListButton label="All Authors" />
+  </TopToolbar>
+);
 
 const AuthorAvatar = () => {
   const record = useRecordContext();
@@ -31,7 +39,7 @@ const AuthorAvatar = () => {
 };
 
 export const AuthorShow = () => (
-  <Show>
+  <Show actions={<AuthorShowActions />}>
     <TabbedShowLayout>
       <Tab label="Overview">
         <Box sx={{ display: 'flex', gap: 3, mb: 2 }}>

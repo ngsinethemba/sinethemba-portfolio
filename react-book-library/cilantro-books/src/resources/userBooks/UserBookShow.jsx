@@ -12,9 +12,18 @@ import {
   Datagrid,
 } from 'react-admin';
 import { Card, CardContent, Box, Typography, Chip, LinearProgress } from '@mui/material';
+import { TopToolbar, ListButton } from 'react-admin';
+import { BackButton } from '../../components/BackButton';
+
+const UserBookShowActions = () => (
+  <TopToolbar>
+    <BackButton />
+    <ListButton label="My Shelf" />
+  </TopToolbar>
+);
 
 export const UserBookShow = () => (
-  <Show>
+  <Show actions={<UserBookShowActions />}>
     <TabbedShowLayout>
       <Tab label="Details">
         <ReferenceField source="book_id" reference="books" link="show">

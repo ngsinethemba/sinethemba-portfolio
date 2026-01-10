@@ -8,7 +8,10 @@ import {
   DateField,
   BooleanField,
   RichTextField,
+  TopToolbar,
+  ListButton,
 } from 'react-admin';
+
 import {
   Card,
   CardContent,
@@ -19,10 +22,19 @@ import {
   Divider,
   Alert,
 } from '@mui/material';
+
 import { ThumbUp, Warning } from '@mui/icons-material';
+import { BackButton } from '../../components/BackButton';
+
+const ReviewShowActions = () => (
+  <TopToolbar>
+    <BackButton />
+    <ListButton label="All Reviews" />
+  </TopToolbar>
+);
 
 export const ReviewShow = () => (
-  <Show>
+  <Show actions={<ReviewShowActions />}>
     <SimpleShowLayout>
       {/* Book and User Info */}
       <Box sx={{ mb: 3 }}>
