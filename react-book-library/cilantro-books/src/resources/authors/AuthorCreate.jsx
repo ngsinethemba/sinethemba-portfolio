@@ -9,9 +9,20 @@ import {
   maxValue
 } from 'react-admin';
 
+import { Toolbar, SaveButton } from 'react-admin';
+import { BackButton } from '../../components/BackButton';
+
+
+export const CustomToolbar = (props) => (
+  <Toolbar {...props}>
+    <SaveButton />
+    <BackButton label="Cancel" variant="outlined" color="inherit" sx={{ ml: 2 }} />
+  </Toolbar>
+);
+
 export const AuthorCreate = () => (
   <Create redirect="show">
-    <SimpleForm>
+    <SimpleForm toolbar={<CustomToolbar />}>
       <TextInput source="name" validate={[required()]} fullWidth />
       <TextInput source="bio" multiline rows={4} fullWidth />
       <NumberInput

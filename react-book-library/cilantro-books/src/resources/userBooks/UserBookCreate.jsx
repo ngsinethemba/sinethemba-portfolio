@@ -11,6 +11,16 @@ import {
 } from 'react-admin';
 import { useLocation } from 'react-router-dom';
 import { Card, CardContent, Typography, Box } from '@mui/material';
+import { Toolbar, SaveButton } from 'react-admin';
+import { BackButton } from '../../components/BackButton';
+
+
+export const CustomToolbar = (props) => (
+  <Toolbar {...props}>
+    <SaveButton />
+    <BackButton label="Cancel" variant="outlined" color="inherit" sx={{ ml: 2 }} />
+  </Toolbar>
+);
 
 export const UserBookCreate = () => {
   const location = useLocation();
@@ -53,7 +63,7 @@ export const UserBookCreate = () => {
           book_id: preSelectedBookId || undefined,
           status_id: 1, // Default to "To Read"
           is_favorite: 0, // Use 0 instead of false for SQLite
-        }}
+        }} toolbar={<CustomToolbar />}
       >
         <Card sx={{ mb: 2, bgcolor: 'primary.light', color: 'primary.contrastText' }}>
           <CardContent>

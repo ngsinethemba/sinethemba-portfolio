@@ -10,10 +10,20 @@ import {
   minValue,
   maxValue
 } from 'react-admin';
+import { Toolbar, SaveButton } from 'react-admin';
+import { BackButton } from '../../components/BackButton';
+
+
+export const CustomToolbar = (props) => (
+  <Toolbar {...props}>
+    <SaveButton />
+    <BackButton label="Cancel" variant="outlined" color="inherit" sx={{ ml: 2 }} />
+  </Toolbar>
+);
 
 export const BookCreate = () => (
   <Create>
-    <SimpleForm>
+    <SimpleForm toolbar={<CustomToolbar />}>
       <TextInput source="title" validate={[required()]} fullWidth />
       <TextInput source="subtitle" fullWidth />
       <TextInput source="isbn" label="ISBN" />
