@@ -1,0 +1,139 @@
+{
+  "hash": "4b08e8bd",
+  "configHash": "27943ed7",
+  "lockfileHash": "921c0f24",
+  "browserHash": "e4defd20",
+  "optimized": {
+    "react-admin": {
+      "src": "../../node_modules/react-admin/dist/index.js",
+      "file": "react-admin.js",
+      "fileHash": "4dde9f3d",
+      "needsInterop": false
+    },
+    "react-router-dom": {
+      "src": "../../node_modules/react-router-dom/dist/index.mjs",
+      "file": "react-router-dom.js",
+      "fileHash": "105c3399",
+      "needsInterop": false
+    },
+    "@mui/icons-material/Book": {
+      "src": "../../node_modules/@mui/icons-material/esm/Book.js",
+      "file": "@mui_icons-material_Book.js",
+      "fileHash": "aa828c8e",
+      "needsInterop": false
+    },
+    "@mui/icons-material/Person": {
+      "src": "../../node_modules/@mui/icons-material/esm/Person.js",
+      "file": "@mui_icons-material_Person.js",
+      "fileHash": "040823da",
+      "needsInterop": false
+    },
+    "@mui/icons-material/Category": {
+      "src": "../../node_modules/@mui/icons-material/esm/Category.js",
+      "file": "@mui_icons-material_Category.js",
+      "fileHash": "e31fa5f2",
+      "needsInterop": false
+    },
+    "@mui/icons-material/LocalOffer": {
+      "src": "../../node_modules/@mui/icons-material/esm/LocalOffer.js",
+      "file": "@mui_icons-material_LocalOffer.js",
+      "fileHash": "d2d38346",
+      "needsInterop": false
+    },
+    "@mui/icons-material/People": {
+      "src": "../../node_modules/@mui/icons-material/esm/People.js",
+      "file": "@mui_icons-material_People.js",
+      "fileHash": "c74a01c6",
+      "needsInterop": false
+    },
+    "@mui/icons-material/LibraryBooks": {
+      "src": "../../node_modules/@mui/icons-material/esm/LibraryBooks.js",
+      "file": "@mui_icons-material_LibraryBooks.js",
+      "fileHash": "45b3b26d",
+      "needsInterop": false
+    },
+    "@mui/icons-material/RateReview": {
+      "src": "../../node_modules/@mui/icons-material/esm/RateReview.js",
+      "file": "@mui_icons-material_RateReview.js",
+      "fileHash": "a1af376e",
+      "needsInterop": false
+    },
+    "@mui/icons-material/Dashboard": {
+      "src": "../../node_modules/@mui/icons-material/esm/Dashboard.js",
+      "file": "@mui_icons-material_Dashboard.js",
+      "fileHash": "693a4d88",
+      "needsInterop": false
+    },
+    "@mui/material": {
+      "src": "../../node_modules/@mui/material/esm/index.js",
+      "file": "@mui_material.js",
+      "fileHash": "ad2c6461",
+      "needsInterop": false
+    },
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "0a30d873",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "9b79c0d1",
+      "needsInterop": true
+    },
+    "@mui/icons-material": {
+      "src": "../../node_modules/@mui/icons-material/esm/index.js",
+      "file": "@mui_icons-material.js",
+      "fileHash": "b09b7e22",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-EH7DUE67": {
+      "file": "chunk-EH7DUE67.js"
+    },
+    "chunk-ZNCD5AUP": {
+      "file": "chunk-ZNCD5AUP.js"
+    },
+    "chunk-XD6GZV6V": {
+      "file": "chunk-XD6GZV6V.js"
+    },
+    "chunk-LS5E4NPN": {
+      "file": "chunk-LS5E4NPN.js"
+    },
+    "chunk-3JT5XAAZ": {
+      "file": "chunk-3JT5XAAZ.js"
+    },
+    "chunk-MAPWQWLE": {
+      "file": "chunk-MAPWQWLE.js"
+    },
+    "chunk-MNYHEBAS": {
+      "file": "chunk-MNYHEBAS.js"
+    },
+    "chunk-PJOPA6EY": {
+      "file": "chunk-PJOPA6EY.js"
+    },
+    "chunk-HVBI3IWG": {
+      "file": "chunk-HVBI3IWG.js"
+    },
+    "chunk-4SHGASCA": {
+      "file": "chunk-4SHGASCA.js"
+    },
+    "chunk-C7SIORPN": {
+      "file": "chunk-C7SIORPN.js"
+    },
+    "chunk-5CUW5FIC": {
+      "file": "chunk-5CUW5FIC.js"
+    },
+    "chunk-C6WWHQR7": {
+      "file": "chunk-C6WWHQR7.js"
+    },
+    "chunk-VCJUNS6P": {
+      "file": "chunk-VCJUNS6P.js"
+    },
+    "chunk-BGO6OVE5": {
+      "file": "chunk-BGO6OVE5.js"
+    }
+  }
+}
