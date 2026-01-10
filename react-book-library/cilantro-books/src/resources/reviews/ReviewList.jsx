@@ -1,3 +1,4 @@
+
 import {
   List,
   Datagrid,
@@ -17,6 +18,7 @@ import {
   CreateButton,
 } from 'react-admin';
 import { Rating, Chip, Box } from '@mui/material';
+import React from 'react';
 
 const reviewFilters = [
   <SearchInput source="q" alwaysOn placeholder="Search reviews..." />,

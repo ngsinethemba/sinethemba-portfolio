@@ -12,6 +12,7 @@ import {
   CreateButton,
   ExportButton
 } from 'react-admin';
+import React from 'react';
 
 const authorFilters = [
   <SearchInput source="q" alwaysOn placeholder="Search authors..." />,

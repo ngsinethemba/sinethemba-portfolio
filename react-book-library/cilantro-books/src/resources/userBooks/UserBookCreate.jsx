@@ -7,6 +7,7 @@ import {
   BooleanInput,
   required,
 } from 'react-admin';
+import React from 'react';
 
 export const UserBookCreate = () => (
   <Create>

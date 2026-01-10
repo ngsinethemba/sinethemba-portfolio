@@ -1,5 +1,6 @@
 import { Admin, Resource, CustomRoutes } from 'react-admin';
 import { Route } from 'react-router-dom';
+import React from 'react';
 
 // Providers
 import dataProvider from './providers/dataProvider';
@@ -104,7 +105,7 @@ const CustomAppBar = () => (
     }}
   >
     <Typography variant="h6" component="span" sx={{ flex: 1 }}>
-      🌿 Cilantro Books
+       Cilantro Books
     </Typography>
   </AppBar>
 );
