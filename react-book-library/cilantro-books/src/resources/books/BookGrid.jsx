@@ -14,12 +14,14 @@ import {
   Box,
   Chip,
   IconButton,
+  Button,
   Rating,
   Snackbar,
   Alert,
+  Tooltip
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { Favorite, FavoriteBorder, Add } from '@mui/icons-material';
+import { Favorite, FavoriteBorder, Add, LocalOffer  } from '@mui/icons-material';
 
 export const BookGrid = () => {
   const { data, isLoading } = useListContext();
@@ -136,13 +138,29 @@ export const BookGrid = () => {
                     pb: 2, // Padding bottom to prevent cutoff
                   }}>
                     {/* Genre Chip */}
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    gap={0.5}
+                    sx={{ mb: 1 }}
+                  >
                     <Chip
                       label={getGenreName(book.genre_id)}
                       size="small"
                       color="primary"
                       variant="outlined"
-                      sx={{ mb: 1, width: 'fit-content' }}
                     />
+
+                    <Tooltip title="Add tags to this book" enterDelay={300}>
+                      <LocalOffer
+                        fontSize="small"
+                        color="action"
+                        sx={{ opacity: 0.7, cursor: 'pointer' }}
+                      />
+                    </Tooltip>
+                  </Box>
+
+
 
                     {/* Title - Multi-line support */}
                     <Typography
@@ -221,6 +239,8 @@ export const BookGrid = () => {
                       gap={1}
                       pt={1}
                     >
+                      
+                    <Tooltip title={isFavorite ? "Remove from Favorites" : "Add to Favorites"} enterDelay={300}>
                       <IconButton
                         size="small"
                         onClick={(e) => handleFavoriteToggle(e, book.id)}
@@ -237,13 +257,22 @@ export const BookGrid = () => {
                           <FavoriteBorder fontSize="small" />
                         )}
                       </IconButton>
-                      <IconButton
+                    </Tooltip>
+                    <Tooltip title="Add to Shelf" enterDelay={300}>
+                      <Button
                         size="small"
-                        color="primary"
-                        onClick={(e) => handleAddToShelf(e, book.id)}
+                        variant="contained"
+                        startIcon={<Add />}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          console.log('Add to shelf:', book.id);
+                          navigate('/user_books/create');
+                        }}
                       >
-                        <Add fontSize="small" />
-                      </IconButton>
+                        ADD to Shelf
+                      </Button>
+                    </Tooltip>
+
                     </Box>
                   </CardContent>
                 </Card>
