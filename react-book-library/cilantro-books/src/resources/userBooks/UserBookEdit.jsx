@@ -8,10 +8,20 @@ import {
   BooleanInput,
   required,
 } from 'react-admin';
+import { Toolbar, SaveButton } from 'react-admin';
+import { BackButton } from '../../components/BackButton';
+
+
+export const CustomToolbar = (props) => (
+  <Toolbar {...props}>
+    <SaveButton />
+    <BackButton label="Cancel" variant="outlined" color="inherit" sx={{ ml: 2 }} />
+  </Toolbar>
+);
 
 export const UserBookEdit = () => (
   <Edit>
-    <SimpleForm>
+    <SimpleForm toolbar={<CustomToolbar />}>
       <ReferenceInput source="user_id" reference="users">
         <SelectInput optionText="username" validate={[required()]} disabled />
       </ReferenceInput>

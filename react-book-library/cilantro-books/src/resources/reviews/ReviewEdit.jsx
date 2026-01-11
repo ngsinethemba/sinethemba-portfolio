@@ -12,10 +12,20 @@ import {
   maxValue,
 } from 'react-admin';
 import { Box, Typography } from '@mui/material';
+import { Toolbar, SaveButton } from 'react-admin';
+import { BackButton } from '../../components/BackButton';
+
+
+export const CustomToolbar = (props) => (
+  <Toolbar {...props}>
+    <SaveButton />
+    <BackButton label="Cancel" variant="outlined" color="inherit" sx={{ ml: 2 }} />
+  </Toolbar>
+);
 
 export const ReviewEdit = () => (
   <Edit>
-    <SimpleForm>
+    <SimpleForm toolbar={<CustomToolbar />}>
       <Typography variant="h6" gutterBottom>
         Edit Your Review
       </Typography>
