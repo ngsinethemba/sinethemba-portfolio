@@ -57,7 +57,7 @@ export const UserBookCreate = () => {
   };
 
   return (
-    <Create transform={transform}>
+    <Create transform={transform} redirect="userBooks">
       <SimpleForm
         defaultValues={{
           book_id: preSelectedBookId || undefined,

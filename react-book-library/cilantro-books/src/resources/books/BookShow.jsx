@@ -274,13 +274,12 @@ export const BookShow = () => (
           <ReferenceManyField
             reference="book_authors"
             target="book_id"
-            label="Authors"
           >
             <Datagrid bulkActionButtons={false}>
-              <ReferenceField source="author_id" reference="authors" link="show">
+              <ReferenceField source="author_id" reference="authors" link="show" label="Name">
                 <TextField source="name" />
               </ReferenceField>
-              <ReferenceField source="author_id" reference="authors" link={false}>
+              <ReferenceField source="author_id" reference="authors" link={false} label="Country">
                 <TextField source="country" />
               </ReferenceField>
               <NumberField source="author_order" label="Order" />
@@ -292,13 +291,13 @@ export const BookShow = () => (
           <ReferenceManyField
             reference="book_tags"
             target="book_id"
-            label="Tags"
+            
           >
             <Datagrid bulkActionButtons={false}>
-              <ReferenceField source="tag_id" reference="tags" link={false}>
-                <TextField source="name" />
+              <ReferenceField source="tag_id" reference="tags" link={false} label="Name">
+                <TextField source="name"/>
               </ReferenceField>
-              <ReferenceField source="tag_id" reference="tags" link={false}>
+              <ReferenceField source="tag_id" reference="tags" link={false} label="Category" >
                 <TextField source="category" />
               </ReferenceField>
             </Datagrid>
