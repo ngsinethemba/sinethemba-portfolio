@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import {
   useListContext,
   useNotify,
-  useRedirect,
   useGetList,
+  useCreate,
+  useDataProvider,
 } from 'react-admin';
 import {
   Grid,
@@ -18,26 +19,46 @@ import {
   Rating,
   Snackbar,
   Alert,
-  Tooltip
+  Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { Favorite, FavoriteBorder, Add, LocalOffer  } from '@mui/icons-material';
+import { Favorite, FavoriteBorder, Add, LocalOffer } from '@mui/icons-material';
+
+const CURRENT_USER_ID = 1;
 
 export const BookGrid = () => {
   const { data, isLoading } = useListContext();
   const navigate = useNavigate();
   const notify = useNotify();
-  const redirect = useRedirect();
-  
-  // State for favorite books (in a real app, this would be in backend)
+  const dataProvider = useDataProvider();
+  const [create] = useCreate();
+
+  // Tag dialog state
+  const [tagDialogOpen, setTagDialogOpen] = useState(false);
+  const [selectedBook, setSelectedBook] = useState(null);
+  const [newTag, setNewTag] = useState('');
+
+  // Local UI state for user tags (temporary until auth + preload)
+  const [userTags, setUserTags] = useState({}); // { [bookId]: ['tag1'] }
+
+  // Favorites
   const [favoriteBooks, setFavoriteBooks] = useState(
     JSON.parse(localStorage.getItem('favoriteBooks') || '[]')
   );
-  
-  // Snackbar state
-  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
-  
-  // Fetch genres for display
+
+  // Snackbar
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'info',
+  });
+
+  // Fetch genres
   const { data: genres } = useGetList('genres', {
     pagination: { page: 1, perPage: 100 },
   });
@@ -46,48 +67,81 @@ export const BookGrid = () => {
     return <Box p={3}>Loading books...</Box>;
   }
 
-  const getGenreName = (genreId) => {
-    return genres?.find((g) => g.id === genreId)?.name || 'Unknown';
-  };
+  const getGenreName = (genreId) =>
+    genres?.find((g) => g.id === genreId)?.name || 'Unknown';
 
-  // Handle favorite toggle
+  // ⭐ Favorites
   const handleFavoriteToggle = (e, bookId) => {
     e.stopPropagation();
-    
+
     const isFavorite = favoriteBooks.includes(bookId);
-    
-    if (isFavorite) {
-      // Remove from favorites
-      const updatedFavorites = favoriteBooks.filter(id => id !== bookId);
-      setFavoriteBooks(updatedFavorites);
-      localStorage.setItem('favoriteBooks', JSON.stringify(updatedFavorites));
-      setSnackbar({
-        open: true,
-        message: 'Removed from favorites',
-        severity: 'info'
+    const updated = isFavorite
+      ? favoriteBooks.filter((id) => id !== bookId)
+      : [...favoriteBooks, bookId];
+
+    setFavoriteBooks(updated);
+    localStorage.setItem('favoriteBooks', JSON.stringify(updated));
+
+    setSnackbar({
+      open: true,
+      message: isFavorite ? 'Removed from favorites' : 'Added to favorites!',
+      severity: isFavorite ? 'info' : 'success',
+    });
+  };
+
+  // 🏷️ Add tag handler (FIXED)
+  const handleAddTag = async () => {
+    if (!newTag.trim() || !selectedBook) return;
+
+    try {
+      // 1️⃣ Check if tag already exists
+      const { data: existingTags } = await dataProvider.getList('tags', {
+        filter: { name: newTag.trim() },
+        pagination: { page: 1, perPage: 1 },
+        sort: { field: 'id', order: 'ASC' },
       });
-    } else {
-      // Add to favorites
-      const updatedFavorites = [...favoriteBooks, bookId];
-      setFavoriteBooks(updatedFavorites);
-      localStorage.setItem('favoriteBooks', JSON.stringify(updatedFavorites));
-      setSnackbar({
-        open: true,
-        message: 'Added to favorites! Click the heart icon in the menu to view all favorites.',
-        severity: 'success'
+
+      let tagId;
+
+      if (existingTags.length > 0) {
+        tagId = existingTags[0].id;
+      } else {
+        // 2️⃣ Create tag
+        const { data: createdTag } = await create('tags', {
+          data: {
+            name: newTag.trim(),
+            category: 'User',
+          },
+        });
+        tagId = createdTag.id;
+      }
+
+      // 3️⃣ Link tag to book (with user_id)
+      await create('book_tags', {
+        data: {
+          book_id: selectedBook.id,
+          tag_id: tagId,
+          user_id: CURRENT_USER_ID,
+        },
       });
+
+      // 4️⃣ Update UI
+      setUserTags((prev) => ({
+        ...prev,
+        [selectedBook.id]: [
+          ...(prev[selectedBook.id] || []),
+          newTag.trim(),
+        ],
+      }));
+
+      setNewTag('');
+      setTagDialogOpen(false);
+
+      notify('Tag added', { type: 'success' });
+    } catch (error) {
+      console.error(error);
+      notify('Failed to add tag', { type: 'error' });
     }
-  };
-
-  // Handle add to shelf with pre-selected book
-  const handleAddToShelf = (e, bookId) => {
-    e.stopPropagation();
-    // Navigate to create page with book pre-selected
-    navigate('/user_books/create', { state: { bookId } });
-  };
-
-  const handleCloseSnackbar = () => {
-    setSnackbar({ ...snackbar, open: false });
   };
 
   return (
@@ -96,7 +150,7 @@ export const BookGrid = () => {
         <Grid container spacing={3}>
           {data?.map((book) => {
             const isFavorite = favoriteBooks.includes(book.id);
-            
+
             return (
               <Grid item xs={12} sm={6} md={4} lg={3} key={book.id}>
                 <Card
@@ -113,7 +167,6 @@ export const BookGrid = () => {
                   }}
                   onClick={() => navigate(`/books/${book.id}/show`)}
                 >
-                  {/* Book Cover - FIXED: Uniform height */}
                   <CardMedia
                     component="img"
                     height="400"
@@ -122,157 +175,85 @@ export const BookGrid = () => {
                       'https://via.placeholder.com/300x400/e0e0e0/666666?text=No+Cover'
                     }
                     alt={book.title}
-                    sx={{
-                      objectFit: 'cover',
-                      backgroundColor: '#f5f5f5',
-                      minHeight: '400px',
-                      maxHeight: '400px',
-                    }}
                   />
 
-                  <CardContent sx={{ 
-                    flexGrow: 1, 
-                    position: 'relative',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    pb: 2, // Padding bottom to prevent cutoff
-                  }}>
-                    {/* Genre Chip */}
-                  <Box
-                    display="flex"
-                    alignItems="center"
-                    gap={0.5}
-                    sx={{ mb: 1 }}
-                  >
-                    <Chip
-                      label={getGenreName(book.genre_id)}
-                      size="small"
-                      color="primary"
-                      variant="outlined"
-                    />
-
-                    <Tooltip title="Add tags to this book" enterDelay={300}>
-                      <LocalOffer
-                        fontSize="small"
-                        color="action"
-                        sx={{ opacity: 0.7, cursor: 'pointer' }}
+                  <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                    {/* GENRE + USER TAGS */}
+                    <Box display="flex" alignItems="center" gap={0.5} flexWrap="wrap" mb={1}>
+                      <Chip
+                        label={getGenreName(book.genre_id)}
+                        size="small"
+                        color="primary"
+                        variant="outlined"
                       />
-                    </Tooltip>
-                  </Box>
 
+                      {(userTags[book.id] || []).map((tag) => (
+                        <Chip
+                          key={tag}
+                          label={tag}
+                          size="small"
+                          color="secondary"
+                        />
+                      ))}
 
+                      <Tooltip title="Add tags to this book">
+                        <IconButton
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedBook(book);
+                            setTagDialogOpen(true);
+                          }}
+                        >
+                          <LocalOffer fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
 
-                    {/* Title - Multi-line support */}
-                    <Typography
-                      variant="body1"
-                      component="div"
-                      sx={{
-                        fontWeight: 'bold',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        display: '-webkit-box',
-                        WebkitLineClamp: 3, // Allow 3 lines for title
-                        WebkitBoxOrient: 'vertical',
-                        minHeight: '4.5em',
-                        lineHeight: 1.5,
-                        mb: 0.5,
-                      }}
-                    >
+                    {/* TITLE */}
+                    <Typography fontWeight="bold" mb={0.5}>
                       {book.title}
                     </Typography>
 
-                    {/* Subtitle (if exists) - Multi-line */}
-                    {book.subtitle && (
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          display: '-webkit-box',
-                          WebkitLineClamp: 2, // Allow 2 lines for subtitle
-                          WebkitBoxOrient: 'vertical',
-                          mb: 1,
-                          lineHeight: 1.3,
-                        }}
-                      >
-                        {book.subtitle}
-                      </Typography>
-                    )}
-
-                    {/* Rating */}
+                    {/* RATING */}
                     <Box display="flex" alignItems="center" gap={0.5} mb={1.5}>
-                      <Rating
-                        value={book.average_rating || 0}
-                        precision={0.1}
-                        size="small"
-                        readOnly
-                      />
-                      <Typography variant="caption" color="text.secondary">
+                      <Rating value={book.average_rating || 0} readOnly size="small" />
+                      <Typography variant="caption">
                         {book.average_rating?.toFixed(1) || 'N/A'}
                       </Typography>
                     </Box>
 
-                    {/* Meta Info */}
-                    <Box
-                      display="flex"
-                      justifyContent="space-between"
-                      alignItems="center"
-                      mt="auto"
-                      pt={1.5}
-                      borderTop={1}
-                      borderColor="divider"
-                      mb={1}
-                    >
-                      <Typography variant="caption" color="text.secondary">
-                        {book.publication_year}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {book.pages} pages
-                      </Typography>
+                    {/* FOOTER */}
+                    <Box mt="auto" display="flex" justifyContent="space-between">
+                      <Typography variant="caption">{book.publication_year}</Typography>
+                      <Typography variant="caption">{book.pages} pages</Typography>
                     </Box>
 
-                    {/* Action Buttons - More spacing */}
-                    <Box
-                      display="flex"
-                      justifyContent="flex-end"
-                      gap={1}
-                      pt={1}
-                    >
-                      
-                    <Tooltip title={isFavorite ? "Remove from Favorites" : "Add to Favorites"} enterDelay={300}>
-                      <IconButton
-                        size="small"
-                        onClick={(e) => handleFavoriteToggle(e, book.id)}
-                        sx={{
-                          color: isFavorite ? 'error.main' : 'action.active',
-                          '&:hover': {
-                            backgroundColor: isFavorite ? 'error.light' : 'action.hover',
-                          }
-                        }}
-                      >
-                        {isFavorite ? (
-                          <Favorite fontSize="small" />
-                        ) : (
-                          <FavoriteBorder fontSize="small" />
-                        )}
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Add to Shelf" enterDelay={300}>
-                      <Button
-                        size="small"
-                        variant="contained"
-                        startIcon={<Add />}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          console.log('Add to shelf:', book.id);
-                          navigate('/user_books/create');
-                        }}
-                      >
-                        ADD to Shelf
-                      </Button>
-                    </Tooltip>
+                    {/* ACTIONS */}
+                    <Box display="flex" justifyContent="flex-end" gap={1} pt={1}>
+                      <Tooltip title={isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}>
+                        <IconButton
+                          size="small"
+                          onClick={(e) => handleFavoriteToggle(e, book.id)}
+                          color={isFavorite ? 'error' : 'default'}
+                        >
+                          {isFavorite ? <Favorite /> : <FavoriteBorder />}
+                        </IconButton>
+                      </Tooltip>
 
+                      <Tooltip title="Add to Shelf">
+                        <Button
+                          size="small"
+                          variant="contained"
+                          startIcon={<Add />}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate('/user_books/create');
+                          }}
+                        >
+                          Add to Shelf
+                        </Button>
+                      </Tooltip>
                     </Box>
                   </CardContent>
                 </Card>
@@ -282,18 +263,40 @@ export const BookGrid = () => {
         </Grid>
       </Box>
 
-      {/* Snackbar for notifications */}
+      {/* TAG DIALOG */}
+      <Dialog open={tagDialogOpen} onClose={() => setTagDialogOpen(false)} maxWidth="xs" fullWidth>
+        <DialogTitle>Add tags</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            fullWidth
+            label="Tag"
+            placeholder="e.g. Favourite, To Read"
+            value={newTag}
+            onChange={(e) => setNewTag(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleAddTag();
+              }
+            }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setTagDialogOpen(false)}>Cancel</Button>
+          <Button variant="contained" onClick={handleAddTag}>
+            Update
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* SNACKBAR */}
       <Snackbar
         open={snackbar.open}
         autoHideDuration={4000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
       >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={snackbar.severity}
-          sx={{ width: '100%' }}
-        >
+        <Alert severity={snackbar.severity}>
           {snackbar.message}
         </Alert>
       </Snackbar>
